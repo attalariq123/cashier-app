@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Dashboard Page</title>
+    <script>
+        function displayQty(listData, checkId, qtyId) {
+            var checkBox = document.getElementById(checkId);
+            var qty = document.getElementById(qtyId);
+            if (checkBox.checked == true) {
+                qty.style.display = "block";
+                checkBox.value = listData + "," + qty.value
+            } else {
+                qty.style.display = "none";
+            }
+        }
+    </script>
+    <style>
+        .avatar {
+            float: left;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .avatar:hover {
+            background-color: #000;
+            cursor: pointer;
+        }
+
+        .navbar {
+            width: 100%;
+            overflow: auto;
+        }
+
+        .menu {
+            float: left;
+            text-align: center;
+            padding: 12px;
+            color: #000;
+            text-decoration: none;
+            font-size: 17px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Dashboard Page</h1>
+    </header>
+
+    <nav>
+        <form method="post" action="/user/img/update-profile" enctype="multipart/form-data">
+            <div class="navbar">
+                <img src="/user/img/profile" alt="Avatar" class="avatar">
+                <label class="menu">Hello {{.Cart.Name}}</label>
+                <label class="menu">Update Profile: </label>
+                <input type="file" name="file-avatar" required />
+                <input type="submit">
+            </div>
+        </form>
+    </nav>
+
+    <section>
+        <h2>List Product</h2>
+        <form method="post" action="/cart/add">
+            {{range $val := .Product}}
+            <input type="checkbox" id="check-{{ .Id }}" name="product"
+                onclick="displayQty('{{ .Id }},{{ .Name }},{{ .Price }}', 'check-{{ .Id }}', 'qty-{{ .Id }}')">
+            <label>{{ .Id }}. {{ .Name }}: Rp. {{ .Price }},-</label>
+            <input type="number" style="display:none" id="qty-{{ .Id }}" value="1" min="1" max="100"
+                onchange="displayQty('{{ .Id }},{{ .Name }},{{ .Price }}', 'check-{{ .Id }}', 'qty-{{ .Id }}')">
+            <br>
+            {{else}}
+            Empty Product
+            {{end}}
+            <button type="submmit">Add to Cart</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>My Cart</h2>
+
+        <ul>
+            {{range $val := .Cart.Cart}}
+            <li>{{ .Name }}
+                <ul>
+                    <li>Price: Rp. {{ .Price }},-</li>
+                    <li>Quantity: {{ .Quantity }}</li>
+                    <li>Total: {{ .Total }}</li>
+                </ul>
+            </li>
+            {{else}}
+            Empty Cart
+            {{end}}
+        </ul>
+        <p>Total Price Rp. {{.Cart.TotalPrice}},-</p>
+    </section>
+
+    <footer>
+        <form method="get" action="/user/logout">
+            <button type="submmit">Logout</button>
+        </form>
+    </footer>
+
+</body>
+
+</html>
